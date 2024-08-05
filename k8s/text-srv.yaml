@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: text-depl
+spec:
+  relicas: 1
+  selector:
+    matchLabels:
+      app: text
+  template:
+    metadata:
+      labels:
+        app: text
+    spec:
+      containers:
+        - name: text
+          image: ishanjoshi25/ragtextsumm:latest
+          ports:
+            - containerPort: 3000
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Exists"
+          effect: "NoSchedule"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: text-srv
+spec:
+  selector:
+    app: text
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+        

@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: image-depl
+spec:
+  relicas: 1
+  selector:
+    matchLabels:
+      app: image
+  template:
+    metadata:
+      labels:
+        app: image
+    spec:
+      containers:
+        - name: image
+          image: ishanjoshi25/ragimagesumm:latest
+          ports:
+            - containerPort: 3000
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Exists"
+          effect: "NoSchedule"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: image-srv
+spec:
+  selector:
+    app: image
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+        
